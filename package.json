@@ -6,6 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ajejey/use-db-state-hook.git"
+  },
+  "keywords": [
+    "react", "persistant", "state", "indexeddb", "hooks", "useDbState", "persistant state", "custom hook", "browser refresh"
+  ],
+  "bugs": {
+    "url": "https://github.com/ajejey/use-db-state-hook/issues"
+  },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
