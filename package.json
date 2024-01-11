@@ -1,6 +1,6 @@
 {
   "name": "use-db-state",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A React Hook NPM Library that that uses IndexedDB in the browser to persistantly store and retrieve state.",
   "main": "useDbState.js",
   "scripts": {
@@ -11,7 +11,15 @@
     "url": "https://github.com/ajejey/use-db-state-hook.git"
   },
   "keywords": [
-    "react", "persistant", "state", "indexeddb", "hooks", "useDbState", "persistant state", "custom hook", "browser refresh"
+    "react",
+    "persistant",
+    "state",
+    "indexeddb",
+    "hooks",
+    "useDbState",
+    "persistant state",
+    "custom hook",
+    "browser refresh"
   ],
   "bugs": {
     "url": "https://github.com/ajejey/use-db-state-hook/issues"
