@@ -11,16 +11,28 @@ npm install use-db-state
 ## Usage
 
 ```js
-import useDbState from 'use-db-state';
+import { useDbState, useDbKeyRemover } from 'use-db-state';
 
 function App() {
   const [myValue, setMyValue] = useDbState('myValue', '');
+  const removeMyKey = useDbKeyRemover(); 
+
+  const handleChange = (e) => {
+    setMyValue(e.target.value);
+  };
+
+  useEffect(() => {
+  
+    // Remove the key 'myValue' from the IndexedDB object store
+    return removeMyKey('myValue');
+
+  },[])
 
   return (
     <div className="App">
       <h1>My App</h1>
       <div>
-        <input type='text' value={myValue} onChange={e => setMyValue(e.target.value)} />
+        <input type='text' value={myValue} onChange={handleChange} />
       </div>
     </div>
   );
@@ -29,9 +41,13 @@ function App() {
 export default App;
 ```
 
-In this example, `useDbState` is used to create a state variable `myValue` with a setter `setMyValue`. The initial value of `myValue` is an empty string. The state is persisted in IndexedDB, so it will be preserved across page reloads.
+In this example, `useDbState` is used to create a state variable `myValue` with a setter `setMyValue`. The initial value of `myValue` is an empty string. The state is persisted in IndexedDB, so it will be preserved across page reloads. The useDbKeyRemover hook is used to remove the key `myValue` from the IndexedDB object store when the component unmounts.
+
+
 
 ## API
+
+### useDbState
 
 `useDbState` takes four arguments:
 
@@ -45,17 +61,32 @@ In this example, `useDbState` is used to create a state variable `myValue` with 
 - The current state value.
 - A setter function to update the state. This function has the same API as the setter returned by `useState`.
 
+### useDbKeyRemover
+
+`useDbKeyRemover` takes two arguments:
+
+- `dbName` (optional): The name of the IndexedDB database. If not provided, defaults to `'userDatabase'`.
+
+- `storeName` (optional): The name of the object store within the database. If not provided, defaults to `'userData'`.
+
+
+`useDbKeyRemover` returns a function that removes the given key from the IndexedDB object store.
+
+- `key` (required): The key to remove from the IndexedDB object store using the returned function.
+
 ```js
 import useDbState from 'use-db-state';
 
 function App() {
   const [myValue, setMyValue] = useDbState('myValue', '', 'myCustomDatabase', 'myCustomStore');
+  const removeMyKey = useDbKeyRemover('myCustomDatabase', 'myCustomStore');
 
   return (
     <div className="App">
       <h1>My App</h1>
       <div>
         <input type='text' value={myValue} onChange={e => setMyValue(e.target.value)} />
+        <button onClick={() => removeMyKey('myValue')}>Remove myValue</button>
       </div>
     </div>
   );

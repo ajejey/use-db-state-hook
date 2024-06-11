@@ -1,5 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 
+/**
+ * Returns a function that returns the value of a key in an IndexedDB object store.
+ *
+ * @param {string} key - The key of the value to retrieve.
+ * @param {*} defaultValue - The default value to return if the key is not found.
+ * @param {string} dbName - The name of the IndexedDB database. Defaults to 'userDatabase'.
+ * @param {string} storeName - The name of the IndexedDB object store. Defaults to 'userData'.
+ * @return {array} An array containing the value of the key and a function to set the value.
+ */
 const useDbState = (key, defaultValue, dbName, storeName ) => {
   dbName = dbName || 'userDatabase';
   storeName = storeName || 'userData';
@@ -30,7 +39,7 @@ const useDbState = (key, defaultValue, dbName, storeName ) => {
         };
 
         transaction.oncomplete = () => {
-          console.log('Read transaction completed.');
+          // console.log('Read transaction completed.');
         };
 
         transaction.onerror = () => {
@@ -58,7 +67,7 @@ const useDbState = (key, defaultValue, dbName, storeName ) => {
         const request = objectStore.put({ id: key, value });
 
         request.onsuccess = () => {
-          console.log('Write transaction completed.');
+          // console.log('Write transaction completed.');
         };
 
         request.onerror = () => {
@@ -72,9 +81,10 @@ const useDbState = (key, defaultValue, dbName, storeName ) => {
     }
   }, [dbName, storeName, key, value]);
 
-  console.log('value:', value);
+  // console.log('value:', value);
 
   return [value, setValue];
 };
 
 export default useDbState;
+
