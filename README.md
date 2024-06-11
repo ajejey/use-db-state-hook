@@ -21,18 +21,13 @@ function App() {
     setMyValue(e.target.value);
   };
 
-  useEffect(() => {
-  
-    // Remove the key 'myValue' from the IndexedDB object store
-    return removeMyKey('myValue');
-
-  },[])
 
   return (
     <div className="App">
       <h1>My App</h1>
       <div>
         <input type='text' value={myValue} onChange={handleChange} />
+        <button onClick={() => removeMyKey('myValue')}>Remove myValue</button>
       </div>
     </div>
   );
