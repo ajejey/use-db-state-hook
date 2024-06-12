@@ -70,7 +70,7 @@ In this example, `useDbState` is used to create a state variable `myValue` with 
 - `key` (required): The key to remove from the IndexedDB object store using the returned function.
 
 ```js
-import useDbState from 'use-db-state';
+import { useDbState, useDbKeyRemover } from 'use-db-state';
 
 function App() {
   const [myValue, setMyValue] = useDbState('myValue', '', 'myCustomDatabase', 'myCustomStore');
@@ -96,7 +96,7 @@ In this example, `useDbState` is used to create a state variable `myValue` with 
 
 ```js
 import React from 'react'
-import useDbState from 'use-db-state';
+import { useDbState } from 'use-db-state';
 
 const MyForm = () => {
     const fields = ['name', 'email', 'phone', 'address', 'subscribe'];

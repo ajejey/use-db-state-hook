@@ -1,6 +1,6 @@
 {
   "name": "use-db-state",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A React Hook that uses IndexedDB in the browser to persistantly store and retrieve state.",
   "main": "index.js",
   "scripts": {
