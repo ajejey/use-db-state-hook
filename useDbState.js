@@ -1,87 +1,79 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { getDbInstance } from '../utils/indexedDB';
+import { subscribe, notify } from '../utils/subscriptions';
+
+const getDbValue = async (dbName, storeName, key) => {
+  const db = await getDbInstance(dbName, storeName);
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], 'readonly');
+    const objectStore = transaction.objectStore(storeName);
+    const request = objectStore.get(key);
+
+    request.onsuccess = (event) => {
+      resolve(event.target.result ? event.target.result.value : undefined);
+    };
+
+    request.onerror = (event) => {
+      reject(event.target.error);
+    };
+  });
+};
+
+const setDbValue = async (dbName, storeName, key, value) => {
+  const db = await getDbInstance(dbName, storeName);
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], 'readwrite');
+    const objectStore = transaction.objectStore(storeName);
+    const request = objectStore.put({ id: key, value });
+
+    request.onsuccess = () => {
+      notify(key, value);
+      resolve();
+    };
+
+    request.onerror = (event) => {
+      reject(event.target.error);
+    };
+  });
+};
 
 /**
- * Returns a function that returns the value of a key in an IndexedDB object store.
+ * Custom React hook that persists state in IndexedDB.
  *
- * @param {string} key - The key of the value to retrieve.
- * @param {*} defaultValue - The default value to return if the key is not found.
- * @param {string} dbName - The name of the IndexedDB database. Defaults to 'userDatabase'.
- * @param {string} storeName - The name of the IndexedDB object store. Defaults to 'userData'.
- * @return {array} An array containing the value of the key and a function to set the value.
+ * @param {string} key - A unique key to identify the state in IndexedDB.
+ * @param {any} defaultValue - The default value for the state.
+ * @param {string} [dbName='userDatabase'] - The name of the IndexedDB database where the state will be stored. If not provided, defaults to 'userDatabase'.
+ * @param {string} [storeName='userData'] - The name of the object store within the database where the state will be stored. If not provided, defaults to 'userData'.
+ * @return {[any, function]} - An array with two elements:
+ *    - The current state value.
+ *    - A setter function to update the state. This function has the same API as the setter returned by useState.
  */
-const useDbState = (key, defaultValue, dbName, storeName ) => {
-  dbName = dbName || 'userDatabase';
-  storeName = storeName || 'userData';
-  
+const useDbState = (key, defaultValue, dbName = 'userDatabase', storeName = 'userData') => {
   const [value, setValue] = useState(defaultValue);
   const didInit = useRef(false);
 
   useEffect(() => {
     if (!didInit.current) {
-      const request = indexedDB.open(dbName, 1);
+      getDbValue(dbName, storeName, key).then((storedValue) => {
+        if (storedValue !== undefined) {
+          setValue(storedValue);
+        }
+        didInit.current = true;
+      }).catch((error) => {
+        console.error('Error fetching value from IndexedDB:', error);
+      });
 
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        db.createObjectStore(storeName, { keyPath: 'id' });
-      };
-
-      request.onsuccess = (event) => {
-        const db = event.target.result;
-        const transaction = db.transaction([storeName], 'readwrite');
-        const objectStore = transaction.objectStore(storeName);
-
-        const storedValue = objectStore.get(key);
-        storedValue.onsuccess = (e) => {
-          const result = e.target.result;
-          if (result) {
-            setValue(result.value);
-          }
-        };
-
-        transaction.oncomplete = () => {
-          // console.log('Read transaction completed.');
-        };
-
-        transaction.onerror = () => {
-          console.error('Error during read transaction:', transaction.error);
-        };
-      };
-
-      request.onerror = (event) => {
-        console.error('Error opening IndexedDB:', event.target.error);
-      };
-
-      didInit.current = true;
+      subscribe(key, setValue);
     }
   }, [dbName, storeName, key]);
 
   useEffect(() => {
     if (didInit.current) {
-      const request = indexedDB.open(dbName, 1);
-
-      request.onsuccess = (event) => {
-        const db = event.target.result;
-        const transaction = db.transaction([storeName], 'readwrite');
-        const objectStore = transaction.objectStore(storeName);
-
-        const request = objectStore.put({ id: key, value });
-
-        request.onsuccess = () => {
-          // console.log('Write transaction completed.');
-        };
-
-        request.onerror = () => {
-          console.error('Error during write transaction:', request.error);
-        };
-      };
-
-      request.onerror = (event) => {
-        console.error('Error opening IndexedDB:', event.target.error);
-      };
+      setDbValue(dbName, storeName, key, value).catch((error) => {
+        console.error('Error setting value in IndexedDB:', error);
+      });
     }
-  }, [dbName, storeName, key, value]);
-
-  // console.log('value:', value);
+  }, [dbName, storeName, key, JSON.stringify(value)]); // Ensure the effect only triggers on deep value changes
 
   return [value, setValue];
 };
