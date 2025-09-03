@@ -1,26 +1,124 @@
 # useDbState
 
-`useDbState` is a custom React hook that allows you to persist state in IndexedDB. It provides an easy-to-use Hook similar to `useState`, but with the added benefit of persistent storage. It uses IndexedDB to store and retrieve state, ensuring that it is always available even after the user closes the browser tab or device.
+[![npm version](https://img.shields.io/npm/v/use-db-state.svg)](https://www.npmjs.com/package/use-db-state)
+[![npm downloads](https://img.shields.io/npm/dm/use-db-state.svg)](https://www.npmjs.com/package/use-db-state)
+[![license](https://img.shields.io/npm/l/use-db-state.svg)](https://github.com/yourusername/use-db-state/blob/main/LICENSE)
 
-## Installation
+> 🚀 A powerful React hook for persistent state management with IndexedDB, featuring global state management, automatic caching, and optimized performance.
+
+`useDbState` is a production-ready React hook that combines the simplicity of `useState` with the persistence of IndexedDB and power of global state management. It's perfect for managing application-wide state, offline-first applications, and sharing state between components.
+
+## 🆕 React 19 Support
+
+**✅ Fully compatible with React 19.x** (including React 19.1.1)
+
+This package supports both React 18 and React 19, ensuring smooth upgrades:
+- **React 18.2.0+**: Full compatibility maintained
+- **React 19.0.0+**: Fully tested and compatible with all React 19 features
+- **No breaking changes**: Seamless upgrade from React 18 to 19
+- **Future-proof**: Automatically supports all React 19.x releases
+
+> ## use-db-state@2.0.0 can now be used as a global state!
+
+## ✨ Features
+
+- 🌍 **Global State Management**: Share state seamlessly between components
+- 💾 **Persistent Storage**: Data persists through page reloads and browser restarts
+- ⚡ **Performance Optimized**: 
+  - In-memory caching for fast reads
+  - Debounced writes to reduce database operations
+  - Queued operations to prevent race conditions
+- 🛡️ **Reliable**: Automatic error handling and recovery
+- 🔍 **Developer Friendly**: Comprehensive debugging support
+- 📱 **Universal**: Works in all modern browsers and React Native
+
+## 🎮 Live Examples
+
+Here are several live examples demonstrating different use cases and features of `useDbState`:
+
+### Basic Counter with Persistence
+[View Demo](https://stackblitz.com/edit/vitejs-vite-jnzmby?file=src%2FApp.jsx)
+A simple counter example showing how state persists across page refreshes. Perfect for getting started with `useDbState`.
+
+### String State Sharing
+[View Demo](https://stackblitz.com/edit/vitejs-vite-auyxlh?file=src%2FApp.jsx)
+Demonstrates how two components can share a string state, showing real-time updates between components.
+
+### Optimized Number Updates
+[View Demo](https://stackblitz.com/edit/vitejs-vite-rjq6uk?file=src%2FApp.jsx)
+Showcases the hook's handling of rapid state changes with numbers, featuring:
+- Race condition prevention
+- Internal debouncing
+- Optimized performance for fast updates
+
+### Array State Management
+[View Demo](https://stackblitz.com/edit/vitejs-vite-4rvslg?file=src%2FApp.jsx)
+Shows how arrays are handled in shared state:
+- Adding elements to array
+- Real-time updates across components
+- Array manipulation with persistence
+
+### Object State Handling
+[View Demo](https://stackblitz.com/edit/vitejs-vite-zrd7jb?file=src%2FApp.jsx)
+Demonstrates working with complex object states:
+- Object property updates
+- Nested object handling
+- State synchronization between components
+
+### Image Storage and Sharing
+[View Demo](https://stackblitz.com/edit/vitejs-vite-z3hluk?file=src%2FApp.jsx)
+Advanced example showing:
+- Binary data storage
+- Image handling in IndexedDB
+- Sharing images between components
+- Efficient large data management
+
+Each example is fully interactive and can be edited live on StackBlitz. They serve as both documentation and a playground for learning how to use `useDbState` effectively.
+
+## 📦 Installation
 
 ```bash
 npm install use-db-state
+# or
+yarn add use-db-state
+# or
+pnpm add use-db-state
 ```
 
-## Usage
+### Requirements
+
+- **React**: 18.2.0+ or 19.0.0+
+- **React DOM**: 18.2.0+ or 19.0.0+
+- **Browser**: Modern browsers with IndexedDB support
+
+## 🚀 Quick Start
+
+```jsx
+import { useDbState } from 'use-db-state';
+
+function Counter() {
+  const [count, setCount] = useDbState('counter', 0);
+  
+  return (
+    <button onClick={() => setCount(prev => prev + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+## 📖 Global State Usage
 
 ```js
 import { useDbState, useDbKeyRemover } from 'use-db-state';
 
-function App() {
+function ComponentOne() {
   const [myValue, setMyValue] = useDbState('myValue', '');
   const removeMyKey = useDbKeyRemover(); 
 
   const handleChange = (e) => {
     setMyValue(e.target.value);
   };
-
 
   return (
     <div className="App">
@@ -33,175 +131,99 @@ function App() {
   );
 }
 
-export default App;
-```
-
-In this example, `useDbState` is used to create a state variable `myValue` with a setter `setMyValue`. The initial value of `myValue` is an empty string. The state is persisted in IndexedDB, so it will be preserved across page reloads. The useDbKeyRemover hook is used to remove the key `myValue` from the IndexedDB object store when the component unmounts.
-
-
-
-## API
-
-### useDbState
-
-`useDbState` takes four arguments:
-
-- `key` (required): A unique key to identify the state in IndexedDB.
-- `defaultValue` (required): The default value for the state. This value is used if no value is found in IndexedDB for the given key.
-- `dbName` (optional): The name of the IndexedDB database where the state will be stored. If not provided, defaults to `'userDatabase'`.
-- `storeName` (optional): The name of the object store within the database where the state will be stored. If not provided, defaults to `'userData'`.
-
-`useDbState` returns an array with two elements:
-
-- The current state value.
-- A setter function to update the state. This function has the same API as the setter returned by `useState`.
-
-### useDbKeyRemover
-
-`useDbKeyRemover` takes two arguments:
-
-- `dbName` (optional): The name of the IndexedDB database. If not provided, defaults to `'userDatabase'`.
-
-- `storeName` (optional): The name of the object store within the database. If not provided, defaults to `'userData'`.
-
-
-`useDbKeyRemover` returns a function that removes the given key from the IndexedDB object store.
-
-- `key` (required): The key to remove from the IndexedDB object store using the returned function.
-
-```js
-import { useDbState, useDbKeyRemover } from 'use-db-state';
-
-function App() {
-  const [myValue, setMyValue] = useDbState('myValue', '', 'myCustomDatabase', 'myCustomStore');
-  const removeMyKey = useDbKeyRemover('myCustomDatabase', 'myCustomStore');
+function ComponentTwo() {
+  const [myValue, setMyValue] = useDbState('myValue'); // You now have access to the myValue state from ComponentOne
 
   return (
     <div className="App">
       <h1>My App</h1>
       <div>
-        <input type='text' value={myValue} onChange={e => setMyValue(e.target.value)} />
-        <button onClick={() => removeMyKey('myValue')}>Remove myValue</button>
+        <p>myValue: {myValue}</p>
       </div>
     </div>
   );
 }
-
-export default App;
-
-```
-In this example, `useDbState` is used to create a state variable `myValue` with a setter `setMyValue`. The initial value of `myValue` is an empty string. The state is persisted in a custom IndexedDB database named `'myCustomDatabase'`, and within that database, it’s stored in an object store named `'myCustomStore'`. The state will be preserved across page reloads.
-
-## Example 2: Persisting Form Data
-
-```js
-import React from 'react'
-import { useDbState } from 'use-db-state';
-
-const MyForm = () => {
-    const fields = ['name', 'email', 'phone', 'address', 'subscribe'];
-
-    const initialValues = {
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        subscribe: false,
-    };
-
-      const [formValues, setFormValues] = useDbState('formData', initialValues)
-
-    const handleChange = (fieldName, value) => {
-        setFormValues({
-            ...formValues,
-            [fieldName]: value,
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form submitted:', formValues);
-        setFormValues(initialValues);
-    }
-    return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Name:
-                <input
-                    type="text"
-                    value={formValues.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                />
-            </label>
-
-            <label>
-                Email:
-                <input
-                    type="email"
-                    value={formValues.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
-                />
-            </label>
-
-            <label>
-                Phone:
-                <input
-                    type="tel"
-                    value={formValues.phone}
-                    onChange={(e) => handleChange('phone', e.target.value)}
-                />
-            </label>
-
-            <label>
-                Address:
-                <textarea
-                    value={formValues.address}
-                    onChange={(e) => handleChange('address', e.target.value)}
-                />
-            </label>
-
-            <label>
-                Subscribe to newsletter:
-                <input
-                    type="checkbox"
-                    checked={formValues.subscribe}
-                    onChange={(e) => handleChange('subscribe', e.target.checked)}
-                />
-            </label>
-
-            <button type="submit">Submit</button>
-        </form>
-    )
-}
-
-export default MyForm
-
 ```
 
-## When to Use
+In this example, `useDbState` is used to create a global state variable `myValue` that can be accessed and modified from any component. The state is persisted in IndexedDB, so it will be preserved across page reloads. The useDbKeyRemover hook is used to remove the key `myValue` from the IndexedDB object store when needed.
 
-Use `useDbState` when you need to persist state across page reloads. It’s particularly useful for things like user preferences or form data that you want to preserve if the user accidentally refreshes or navigates away from the page.
+## 📚 API Reference
 
-## Advantages of using IndexedDB
+### useDbState
 
-`useDbState` uses IndexedDB for data persistence, which has several advantages over localStorage:
+```typescript
+function useDbState<T>(
+  key: string,
+  defaultValue?: T,
+  dbName?: string,
+  storeName?: string,
+  options?: {
+    debounceTime?: number;
+  }
+): [T, (value: T | ((prev: T) => T)) => void]
+```
 
-1. **Larger Storage Capacity:** IndexedDB can store large amounts of data, ranging from a few megabytes to gigabytes. In contrast, localStorage usually has a storage limit of around 5-10MB per domain.
-2. **Complex Data Queries:** IndexedDB supports advanced queries using indexes. localStorage, on the other hand, only supports key-value pairs and does not have built-in support for indexing or complex queries
-3. **Asynchronous Operations:** IndexedDB operations are asynchronous, preventing blocking of the main thread.
-4. **Structured Data:** IndexedDB can store complex structured data like objects and arrays. localStorage only supports strings.
-5. **Durability:** Data in IndexedDB persists even when the browser is closed, or the system crashes.
-6. **Scalability:** IndexedDB scales well with large datasets.
+#### Parameters
 
-These advantages make `useDbState` a powerful tool for managing state in your React applications.
+- `key` (required): Unique identifier for the state
+- `defaultValue`: Initial value if none exists in storage
+- `dbName`: Database name (default: 'userDatabase')
+- `storeName`: Store name (default: 'userData')
+- `options`: Configuration object
+  - `debounceTime`: Milliseconds to debounce writes (default: 100)
+
+#### Returns
+
+Returns a tuple containing:
+1. Current state value
+2. Setter function (accepts new value or updater function)
+
+### useDbKeyRemover
+
+```typescript
+function useDbKeyRemover(
+  dbName?: string,
+  storeName?: string
+): (key: string) => Promise<void>
+```
+
+## ⚡ Performance Considerations
+
+- **In-Memory Cache**: First reads are cached for instant access
+- **Debounced Writes**: Prevents excessive database operations
+- **Operation Queue**: Ensures write operations are atomic
+- **Cleanup**: Automatic subscription cleanup on unmount
+
+## 🔄 Migration Guide
+
+### Upgrading to React 19
+
+No code changes required! Simply update your React dependencies:
+
+```bash
+npm install react@^19.0.0 react-dom@^19.0.0
+```
+
+Your existing `useDbState` code will work identically in React 19:
+
+```jsx
+// This code works in both React 18 and 19
+const [data, setData] = useDbState('myKey', defaultValue);
+```
 
 
-## Limitations
+## 🤝 Contributing
 
-`useDbState` uses `IndexedDB` for storage, which is asynchronous and has certain limitations. It’s not suitable for storing very large amounts of data in a single state variable, and complex data structures may need to be serialized before storage.
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request on the GitHub repository.
+## 📄 License
 
-## License
-This project is licensed under the MIT license
+MIT © Ajey Nagarkatti
+
+## 🔍 Keywords
+
+react, hook, indexeddb, state management, persistent storage, cross-tab synchronization, react-hooks, browser storage, offline-first, web storage, react state, database, web development, frontend, javascript
+
+---
+
+<p align="center">Made with ❤️ for the React community</p>

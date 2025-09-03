@@ -1,8 +1,16 @@
 {
   "name": "use-db-state",
-  "version": "2.0.0",
-  "description": "A React Hook that uses IndexedDB in the browser to persistantly store and retrieve state.",
+  "version": "2.2.0",
+  "description": "A React Hook that uses IndexedDB in the browser to persistently store and retrieve state.",
   "main": "index.js",
+  "private": false,
+  "files": [
+    "index.js",
+    "useDbState.js",
+    "useDbKeyRemover.js",
+    "utils/indexedDB.js",
+    "utils/subscriptions.js"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,22 +20,22 @@
   },
   "keywords": [
     "react",
-    "persistant",
+    "persistent",
     "global state",
     "indexeddb",
     "hooks",
     "useDbState",
-    "persistant state",
+    "persistent state",
     "custom hook",
     "browser refresh"
   ],
   "bugs": {
     "url": "https://github.com/ajejey/use-db-state-hook/issues"
   },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
   },
   "author": "Ajey Nagarkatti",
-  "license": "ISC"
+  "license": "MIT"
 }
